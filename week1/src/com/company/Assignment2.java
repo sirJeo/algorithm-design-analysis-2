@@ -2,6 +2,13 @@
  * Programming Assignment #1
  *
  * PA1.2:
+ *
+ * This file describes a set of jobs with positive and integral weights
+ * and lengths. It has the format
+ * [number_of_jobs]
+ * [job_1_weight] [job_1_length]
+ * [job_2_weight] [job_2_length]
+ *
  * Your task now is to run the greedy algorithm that schedules jobs (optimally)
  * in decreasing order of the ratio (weight/length). In this algorithm, it does
  * not matter how you break ties. You should report the sum of weighted completion
@@ -16,9 +23,8 @@ import java.util.*;
 
 public class Assignment2 {
 
-    private static Integer amount = null;
-
-    private static TreeMap<Double, ArrayList<TaskItem>> tasksPA2 = new TreeMap<>();
+    private Integer amount = null;
+    private TreeMap<Double, ArrayList<TaskItem>> tasksPA2 = new TreeMap<>();
 
     public Assignment2(String filename) {
         try {

@@ -2,6 +2,13 @@
  * Programming Assignment #1
  *
  * PA1.1:
+ *
+ * This file describes a set of jobs with positive and integral weights
+ * and lengths. It has the format
+ * [number_of_jobs]
+ * [job_1_weight] [job_1_length]
+ * [job_2_weight] [job_2_length]
+ *
  * Your task in this problem is to run the greedy algorithm that schedules
  * jobs in decreasing order of the difference (weight - length). Recall from
  * lecture that this algorithm is not always optimal. IMPORTANT: if two jobs
@@ -18,10 +25,8 @@ import java.io.*;
 import java.util.*;
 
 public class Assignment1 {
-
-    private static Integer amount = null;
-
-    private static TreeMap<Integer, ArrayList<TaskItem>> tasksPA1 = new TreeMap<>();
+    private Integer amount = null;
+    private TreeMap<Integer, ArrayList<TaskItem>> tasksPA1 = new TreeMap<>();
 
     public Assignment1(String filename) {
         try {

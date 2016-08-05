@@ -1,8 +1,5 @@
 package com.company;
 
-/**
- * Created by user on 03.08.16.
- */
 public class TaskItem {
     private Integer weight;
     private Integer length;
