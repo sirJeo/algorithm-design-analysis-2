@@ -33,25 +33,19 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Scanner;
 import java.util.TreeMap;
+import java.util.Map;
 
 public class Clustering2 {
     private Integer nodeAmount = null;
+    private Integer bits = null;
+    private Integer clusters = 0;
+
     private TreeMap<Integer, Vertex> vertexList = new TreeMap<>();
-
-    private PriorityQueue<Edge> edges = new PriorityQueue<>(new EdgeComparator());
-
-    class EdgeComparator implements Comparator<Edge> {
-        @Override
-        public int compare(Edge o1, Edge o2) {
-            return (o1.getCost() > o2.getCost()) ? 1 : -1;
-        }
-    }
 
     private class Vertex {
 
         private Integer name = null;
         private Vertex parent = null;
-        private Integer weight = 0;
 
         public Vertex(int name) {
             this.name = name;
@@ -60,12 +54,6 @@ public class Clustering2 {
         public Integer getName() {
             return name;
         }
-
-        public Integer getWeight() {
-            return weight;
-        }
-
-        public void setWeight(Integer weight) { this.weight = weight; }
 
         public void setParent(Vertex parent) {
             this.parent = parent;
@@ -80,54 +68,8 @@ public class Clustering2 {
             }
         }
 
-        public Vertex join(Vertex v) {
-            Vertex vp = v.getParent();
-            Vertex tp = getParent();
-
-            switch(vp.getWeight().compareTo(tp.getWeight())) {
-                case -1:
-                    vp.setParent(tp);
-                    return vp;
-
-                case 0:
-                    vp.setWeight(vp.getWeight()+1);
-
-                case 1:
-                    tp.setParent(vp);
-                    return tp;
-            }
-            return null;
-        }
-    }
-
-    private class Edge {
-        private Integer cost = null;
-        private Vertex v0 = null;
-        private Vertex v1 = null;
-
-        public Edge(Vertex v0, Vertex v1, Integer cost) {
-            this.v0 = v0;
-            this.v1 = v1;
-            this.cost = cost;
-        }
-
-        public Integer getCost() {
-            return cost;
-        }
-
-        public Vertex getV0() {
-            return v0;
-        }
-
-        public Vertex getV1() {
-            return v1;
-        }
-
-        public Vertex collapse() {
-            if(v0.getParent().getName() != v1.getParent().getName()) {
-                return v0.join(v1);
-            }
-            return null;
+        public void join(Vertex v) {
+            v.setParent(getParent());
         }
     }
 
@@ -136,7 +78,9 @@ public class Clustering2 {
             Scanner scan = new Scanner(new File(filename));
             while (scan.hasNextLine()) {
                 if (nodeAmount == null) {
-                    nodeAmount = Integer.parseInt(scan.nextLine());
+                    String[] items = scan.nextLine().split(" ");
+                    nodeAmount = Integer.parseInt(items[0]);
+                    bits = Integer.parseInt(items[1]);
                 } else {
                     prepareLine(scan.nextLine());
                 }
@@ -147,47 +91,32 @@ public class Clustering2 {
     }
 
     private void prepareLine(String line) {
-        String[] items = line.split(" ");
-//        int vTitle0 = Integer.parseInt(items[0]);
-//        int vTitle1 = Integer.parseInt(items[1]);
-//        int cost = Integer.parseInt(items[2]);
-//
-//        Vertex v0 = vertexList.get(vTitle0);
-//        Vertex v1 = vertexList.get(vTitle1);
-//
-//        if (v0 == null) {
-//            v0 = new Vertex(vTitle0);
-//            vertexList.put(vTitle0, v0);
-//        }
-//
-//        if (v1 == null) {
-//            v1 = new Vertex(vTitle1);
-//            vertexList.put(vTitle1, v1);
-//        }
-//
-//        edges.add(new Edge(v0, v1, cost));
+        Integer number = Integer.parseInt(line.replace(" ", ""), 2);
+        Vertex newVertex = new Vertex(number);
+        boolean inCluster = false;
+
+        System.out.println("=============================: " + number);
+        for (Map.Entry<Integer, Vertex> entry : vertexList.entrySet()) {
+            Vertex v = entry.getValue();
+
+//            System.out.println(Integer.toBinaryString(v.getName()));
+//            System.out.println(Integer.toBinaryString(number));
+
+            if(Integer.bitCount(v.getName() ^ number) < 3) {
+                System.out.println(Integer.bitCount(v.getName() ^ number));
+                v.join(newVertex);
+                inCluster = true;
+            }
+        }
+        if (!inCluster) {
+            clusters++;
+            System.out.println("Clusters: " + clusters);
+        }
+
+        vertexList.put(vertexList.size(), newVertex);
     }
 
     public Integer calculate() {
-/*
-        while (vertexList.size() > 4 && !edges.isEmpty()) {
-            Edge edge = edges.poll();
-
-            Vertex toRemove = edge.collapse();
-
-            if (toRemove != null) {
-                vertexList.remove(toRemove.getName(), toRemove);
-            }
-        }
-
-        while (!edges.isEmpty()) {
-            Edge edge = edges.poll();
-            if (edge.getV0().getParent().getName() != edge.getV1().getParent().getName()) {
-                return edge.getCost();
-            }
-        }
-*/
-
-        return null;
+        return clusters;
     }
 }
