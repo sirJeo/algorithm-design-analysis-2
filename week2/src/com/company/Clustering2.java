@@ -24,6 +24,7 @@
  * For example, is there some way you can identify the smallest distances without explicitly
  * looking at every pair of nodes?
  */
+
 package com.company;
 
 import java.io.File;
