@@ -1,10 +1,10 @@
 /**
  * Question 2:
- *
+ * <p>
  * In this question your task is again to run the clustering algorithm from lecture, but on a
  * MUCH bigger graph. So big, in fact, that the distances (i.e., edge costs) are only defined
  * implicitly, rather than being provided as an explicit list.
- *
+ * <p>
  * The data set is here. The format is:
  * [# of nodes] [# of bits for each node's label]
  * [first bit of node 1] ... [last bit of node 1]
@@ -29,8 +29,6 @@ package com.company;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Comparator;
-import java.util.PriorityQueue;
 import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.Map;
@@ -46,6 +44,7 @@ public class Clustering2 {
 
         private Integer name = null;
         private Vertex parent = null;
+        private Integer weight = 0;
 
         public Vertex(int name) {
             this.name = name;
@@ -53,6 +52,14 @@ public class Clustering2 {
 
         public Integer getName() {
             return name;
+        }
+
+        public Integer getWeight() {
+            return weight;
+        }
+
+        public void setWeight(Integer weight) {
+            this.weight = weight;
         }
 
         public void setParent(Vertex parent) {
@@ -68,8 +75,24 @@ public class Clustering2 {
             }
         }
 
-        public void join(Vertex v) {
-            v.setParent(getParent());
+        public boolean join(Vertex v) {
+            Vertex vp = v.getParent();
+            Vertex tp = getParent();
+            if (vp.getName() != tp.getName()) {
+                switch (vp.getWeight().compareTo(tp.getWeight())) {
+                    case -1:
+                        vp.setParent(tp);
+                        break;
+                    case 0:
+                        vp.setWeight(vp.getWeight() + 1);
+
+                    case 1:
+                        tp.setParent(vp);
+                }
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -81,6 +104,7 @@ public class Clustering2 {
                     String[] items = scan.nextLine().split(" ");
                     nodeAmount = Integer.parseInt(items[0]);
                     bits = Integer.parseInt(items[1]);
+                    clusters = nodeAmount;
                 } else {
                     prepareLine(scan.nextLine());
                 }
@@ -93,26 +117,15 @@ public class Clustering2 {
     private void prepareLine(String line) {
         Integer number = Integer.parseInt(line.replace(" ", ""), 2);
         Vertex newVertex = new Vertex(number);
-        boolean inCluster = false;
+        int distanse;
 
-        System.out.println("=============================: " + number);
         for (Map.Entry<Integer, Vertex> entry : vertexList.entrySet()) {
             Vertex v = entry.getValue();
-
-//            System.out.println(Integer.toBinaryString(v.getName()));
-//            System.out.println(Integer.toBinaryString(number));
-
-            if(Integer.bitCount(v.getName() ^ number) < 3) {
-                System.out.println(Integer.bitCount(v.getName() ^ number));
-                v.join(newVertex);
-                inCluster = true;
+            distanse = Integer.bitCount(v.getName() ^ number);
+            if (distanse < 3 && v.join(newVertex)) {
+                clusters--;
             }
         }
-        if (!inCluster) {
-            clusters++;
-            System.out.println("Clusters: " + clusters);
-        }
-
         vertexList.put(vertexList.size(), newVertex);
     }
 
