@@ -117,12 +117,13 @@ public class Clustering2 {
     private void prepareLine(String line) {
         Integer number = Integer.parseInt(line.replace(" ", ""), 2);
         Vertex newVertex = new Vertex(number);
-        int distanse;
+        int dist;
 
         for (Map.Entry<Integer, Vertex> entry : vertexList.entrySet()) {
             Vertex v = entry.getValue();
-            distanse = Integer.bitCount(v.getName() ^ number);
-            if (distanse < 3 && v.join(newVertex)) {
+            dist = Integer.bitCount(v.getName() ^ number);
+
+            if (dist < 3 && newVertex.join(v)) {
                 clusters--;
             }
         }
